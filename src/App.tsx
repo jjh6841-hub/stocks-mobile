@@ -153,19 +153,20 @@ function Spinner() {
   )
 }
 
-// ── 지수 카드 (2열 그리드) ──────────────────────────────────────
+// ── 지수 카드 (한 줄 가로 드래그) ──────────────────────────────────────
 function IndexCards({ quotes }: { quotes: Record<string, Quote> }) {
   const indices = Object.values(quotes).filter(q => q.type === 'index')
   return (
-    <div style={{ padding:'0 16px', marginBottom:'8px' }}>
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px' }}>
+    <div style={{ overflowX:'auto', WebkitOverflowScrolling:'touch', paddingBottom:'4px', marginBottom:'8px',
+      msOverflowStyle:'none', scrollbarWidth:'none' } as React.CSSProperties}>
+      <div style={{ display:'flex', gap:'10px', padding:'0 16px', width:'max-content' }}>
         {indices.map(q => (
           <div key={q.sym} style={{
             background: C.card, border:`1px solid ${C.border}`, borderRadius:'14px',
-            padding:'11px 13px',
+            padding:'12px 14px', width:'120px', flexShrink:0,
             borderLeft: `3px solid ${pctColor(q.changePct)}`,
           }}>
-            <div style={{ fontSize:'10px', color:C.muted, marginBottom:'4px', fontWeight:'600', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{q.name}</div>
+            <div style={{ fontSize:'10px', color:C.muted, marginBottom:'5px', fontWeight:'600', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{q.name}</div>
             <div style={{ fontSize:'17px', fontWeight:'800', color:C.text, marginBottom:'3px' }}>
               {fmt(q.price, q.price > 100 ? 0 : 2)}
             </div>
