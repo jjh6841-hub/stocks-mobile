@@ -153,27 +153,27 @@ function Spinner() {
   )
 }
 
-// ── 지수 카드 (가로 스크롤) ──────────────────────────────────────
+// ── 지수 카드 (2열 그리드) ──────────────────────────────────────
 function IndexCards({ quotes }: { quotes: Record<string, Quote> }) {
   const indices = Object.values(quotes).filter(q => q.type === 'index')
   return (
-    <div style={{ overflowX:'auto', paddingBottom:'4px', marginBottom:'8px' }}>
-      <div style={{ display:'flex', gap:'10px', padding:'0 16px', width:'max-content' }}>
+    <div style={{ padding:'0 16px', marginBottom:'8px' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px' }}>
         {indices.map(q => (
           <div key={q.sym} style={{
-            background: C.card, border:`1px solid ${C.border}`, borderRadius:'16px',
-            padding:'14px 18px', minWidth:'130px',
+            background: C.card, border:`1px solid ${C.border}`, borderRadius:'14px',
+            padding:'11px 13px',
             borderLeft: `3px solid ${pctColor(q.changePct)}`,
           }}>
-            <div style={{ fontSize:'11px', color:C.muted, marginBottom:'6px', fontWeight:'600' }}>{q.name}</div>
-            <div style={{ fontSize:'20px', fontWeight:'800', color:C.text, marginBottom:'4px' }}>
+            <div style={{ fontSize:'10px', color:C.muted, marginBottom:'4px', fontWeight:'600', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{q.name}</div>
+            <div style={{ fontSize:'17px', fontWeight:'800', color:C.text, marginBottom:'3px' }}>
               {fmt(q.price, q.price > 100 ? 0 : 2)}
             </div>
-            <div style={{ fontSize:'13px', fontWeight:'700', color:pctColor(q.changePct) }}>
+            <div style={{ fontSize:'12px', fontWeight:'700', color:pctColor(q.changePct) }}>
               {fmtPct(q.changePct)}
             </div>
             {q.ath && (
-              <div style={{ fontSize:'10px', color:C.dim, marginTop:'4px' }}>
+              <div style={{ fontSize:'10px', color:C.dim, marginTop:'3px' }}>
                 ATH {((q.price/q.ath-1)*100).toFixed(1)}%
               </div>
             )}
@@ -184,19 +184,20 @@ function IndexCards({ quotes }: { quotes: Record<string, Quote> }) {
   )
 }
 
-// ── ETF 섹터 카드 ─────────────────────────────────────────────────
+// ── ETF 섹터 카드 (3열 그리드) ─────────────────────────────────────
 function EtfCards({ quotes }: { quotes: Record<string, Quote> }) {
   const etfs = Object.values(quotes).filter(q => q.type === 'etf')
   return (
-    <div style={{ overflowX:'auto', paddingBottom:'4px' }}>
-      <div style={{ display:'flex', gap:'8px', padding:'0 16px', width:'max-content' }}>
+    <div style={{ padding:'0 16px' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'7px' }}>
         {etfs.map(q => (
           <div key={q.sym} style={{
-            background: C.card2, border:`1px solid ${C.border}`, borderRadius:'12px',
-            padding:'10px 14px', minWidth:'90px', textAlign:'center',
+            background: C.card2, border:`1px solid ${C.border}`, borderRadius:'10px',
+            padding:'9px 8px', textAlign:'center',
+            borderTop: `2px solid ${pctColor(q.changePct)}`
           }}>
-            <div style={{ fontSize:'11px', color:C.muted, marginBottom:'6px' }}>{q.name}</div>
-            <div style={{ fontSize:'13px', fontWeight:'700', color:pctColor(q.changePct) }}>
+            <div style={{ fontSize:'10px', color:C.muted, marginBottom:'4px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{q.name}</div>
+            <div style={{ fontSize:'12px', fontWeight:'700', color:pctColor(q.changePct) }}>
               {fmtPct(q.changePct)}
             </div>
           </div>
@@ -242,17 +243,18 @@ function FearGreedGauge({ fg }: { fg: { value: number; label: string } }) {
 }
 
 // ── 환율 미니 카드 ────────────────────────────────────────────────
+// forex = open.er-api.com/v6/latest/USD 응답: KRW=1350, JPY=149, EUR=0.92, CNY=7.24 (USD 기준)
 function ForexMini({ forex }: { forex: Record<string, number> }) {
+  const krw = forex['KRW'] ?? 0
   const pairs = [
-    { label:'달러/원', val: forex['KRW'] ? (1/forex['KRW']*1000).toFixed(1) : '-', unit:'₩' },
-    { label:'엔/원',   val: forex['JPY'] && forex['KRW'] ? ((forex['JPY']/forex['KRW'])).toFixed(2) : '-', unit:'₩' },
-    { label:'유로/원', val: forex['EUR'] && forex['KRW'] ? (forex['EUR']/forex['KRW']*1000).toFixed(1) : '-', unit:'₩' },
-    { label:'위안/원', val: forex['CNY'] && forex['KRW'] ? (forex['CNY']/forex['KRW']*100).toFixed(1) : '-', unit:'₩' },
+    { label:'달러/원',   val: krw > 0 ? fmt(krw, 0) : '-' },
+    { label:'엔화/원',   val: krw > 0 && forex['JPY'] ? fmt(krw / forex['JPY'], 2) : '-' },
+    { label:'유로/원',   val: krw > 0 && forex['EUR'] ? fmt(krw / forex['EUR'], 0) : '-' },
+    { label:'위안/원',   val: krw > 0 && forex['CNY'] ? fmt(krw / forex['CNY'], 1) : '-' },
   ]
-  const usdKrw = forex['KRW'] ? 1/forex['KRW'] : 0
   return (
     <div style={{ margin:'0 16px', background:C.card, border:`1px solid ${C.border}`, borderRadius:'16px', padding:'16px' }}>
-      <div style={{ fontSize:'12px', color:C.muted, fontWeight:'700', letterSpacing:'1px', marginBottom:'12px' }}>환율</div>
+      <div style={{ fontSize:'12px', color:C.muted, fontWeight:'700', letterSpacing:'1px', marginBottom:'12px' }}>환율 (원 기준)</div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
         {pairs.map(p => (
           <div key={p.label} style={{ background:C.card2, borderRadius:'12px', padding:'10px 12px' }}>
@@ -261,11 +263,6 @@ function ForexMini({ forex }: { forex: Record<string, number> }) {
           </div>
         ))}
       </div>
-      {usdKrw > 0 && (
-        <div style={{ marginTop:'10px', fontSize:'11px', color:C.dim, textAlign:'right' }}>
-          USD/KRW: {fmt(usdKrw, 1)}
-        </div>
-      )}
     </div>
   )
 }
