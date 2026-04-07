@@ -403,49 +403,41 @@ function NewsFeed({ news }: { news: any[] }) {
         </div>
       </div>
 
-      {/* 뉴스 가로 스크롤 카드 */}
-      {filtered.length === 0 ? (
-        <div style={{ textAlign:'center', color:C.dim, fontSize:'13px', padding:'32px' }}>해당 카테고리 뉴스 없음</div>
-      ) : (
-        <div style={{ overflowX:'auto', WebkitOverflowScrolling:'touch', paddingBottom:'8px',
-          msOverflowStyle:'none', scrollbarWidth:'none' } as React.CSSProperties}>
-          <div style={{ display:'flex', gap:'10px', padding:'0 16px', width:'max-content' }}>
-            {filtered.slice(0, 30).map((n: any) => {
-              const cat = NEWS_CAT[n.category]
-              const isTrump = n.isTrump
-              return (
-                <a key={n.id} href={n.url} target="_blank" rel="noreferrer" style={{ textDecoration:'none', flexShrink:0 }}>
-                  <div style={{
-                    width:'260px',
-                    background: isTrump ? 'rgba(255,107,53,0.08)' : C.card,
-                    border: `1px solid ${isTrump ? 'rgba(255,107,53,0.3)' : C.border}`,
-                    borderRadius:'14px', padding:'14px',
-                    display:'flex', flexDirection:'column', gap:'8px',
-                  }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:'6px' }}>
-                      {cat && (
-                        <span style={{ fontSize:'10px', fontWeight:'700', color:cat.color,
-                          background:`${cat.color}22`, padding:'2px 8px', borderRadius:'20px', flexShrink:0 }}>
-                          {cat.label}
-                        </span>
-                      )}
-                      {n.sentiment === 'negative' && <span style={{ fontSize:'10px', color:C.red, flexShrink:0 }}>▼</span>}
-                      {n.sentiment === 'positive'  && <span style={{ fontSize:'10px', color:C.green, flexShrink:0 }}>▲</span>}
-                      <span style={{ fontSize:'10px', color:C.dim, marginLeft:'auto', flexShrink:0 }}>{n.source}</span>
-                    </div>
-                    <div style={{ fontSize:'13px', color:C.text, fontWeight:'600', lineHeight:'1.55',
-                      wordBreak:'keep-all', display:'-webkit-box', WebkitLineClamp:4,
-                      WebkitBoxOrient:'vertical', overflow:'hidden' } as React.CSSProperties}>
-                      {n.title}
-                    </div>
-                    <div style={{ fontSize:'10px', color:C.dim, marginTop:'auto' }}>{n.time}</div>
-                  </div>
-                </a>
-              )
-            })}
-          </div>
-        </div>
-      )}
+      {/* 뉴스 세로 리스트 */}
+      <div style={{ padding:'0 16px', display:'flex', flexDirection:'column', gap:'10px' }}>
+        {filtered.slice(0, 30).map((n: any) => {
+          const cat = NEWS_CAT[n.category]
+          const isTrump = n.isTrump
+          return (
+            <a key={n.id} href={n.url} target="_blank" rel="noreferrer" style={{ textDecoration:'none' }}>
+              <div style={{
+                background: isTrump ? 'rgba(255,107,53,0.08)' : C.card,
+                border: `1px solid ${isTrump ? 'rgba(255,107,53,0.3)' : C.border}`,
+                borderRadius:'14px', padding:'13px 15px',
+              }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'7px' }}>
+                  {cat && (
+                    <span style={{ fontSize:'10px', fontWeight:'700', color:cat.color,
+                      background:`${cat.color}22`, padding:'2px 8px', borderRadius:'20px' }}>
+                      {cat.label}
+                    </span>
+                  )}
+                  {n.sentiment === 'negative' && <span style={{ fontSize:'10px', color:C.red }}>▼ 부정</span>}
+                  {n.sentiment === 'positive'  && <span style={{ fontSize:'10px', color:C.green }}>▲ 긍정</span>}
+                  <span style={{ fontSize:'10px', color:C.dim, marginLeft:'auto' }}>{n.time}</span>
+                  <span style={{ fontSize:'10px', color:C.dim }}>{n.source}</span>
+                </div>
+                <div style={{ fontSize:'14px', color:C.text, fontWeight:'600', lineHeight:'1.5', wordBreak:'keep-all' }}>
+                  {n.title}
+                </div>
+              </div>
+            </a>
+          )
+        })}
+        {filtered.length === 0 && (
+          <div style={{ textAlign:'center', color:C.dim, fontSize:'13px', padding:'32px' }}>해당 카테고리 뉴스 없음</div>
+        )}
+      </div>
     </div>
   )
 }
